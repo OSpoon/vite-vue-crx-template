@@ -23,20 +23,20 @@ onMounted(() => {
   spinning.value = true;
   getProfile(
     (result) => {
-      spinning.value = false;
-      if (result) {
-        const { name, gender, email } = result;
-        profile.name = name;
-        profile.gender = gender;
-        profile.email = email;
-      }
+      const { name, gender, email } = result;
+      profile.name = name;
+      profile.gender = gender;
+      profile.email = email;
     },
     (error) => {
-      spinning.value = false;
       profile.error = error;
+    },
+    () => {
+      spinning.value = false;
     }
   );
 });
 </script>
 
 <style scoped></style>
+@/api/fatch
