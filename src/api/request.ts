@@ -39,8 +39,6 @@ export function request<T>(
   });
 }
 
-const BASE_URL = "https://my-json-server.typicode.com/ospoon/mock";
-
 export function apiRouter(
   method: "get" | "post",
   path: string,
@@ -72,7 +70,7 @@ export function immediateRoute(
     payload?: Payload | undefined;
   }
 ) {
-  return request(method, `${BASE_URL}/${path}`, options);
+  return request(method, path, options);
 }
 
 export function backgroundRoute(
