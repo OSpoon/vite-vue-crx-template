@@ -28,7 +28,6 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-// import "@/content";
 const selectedKeys = ref<string[]>(["home"]);
 </script>
 

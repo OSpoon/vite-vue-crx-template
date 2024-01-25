@@ -5,9 +5,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite -c vite.popup.config.ts",
-    "build": "vue-tsc && vite build -c vite.popup.config.ts && vite build -c vite.content.config.ts && vite build -c vite.background.config.ts && esno scripts/build.ts",
-    "preview": "vite preview -c vite.popup.config.ts"
+    "dev": "vite",
+    "build": "vue-tsc && esno scripts/build-all.ts",
+    "preview": "vite preview"
   },
   "dependencies": {
     "ant-design-vue": "^4.1.1",
@@ -17,10 +17,12 @@
   },
   "devDependencies": {
     "@types/chrome": "^0.0.258",
+    "@types/fs-extra": "^11.0.4",
     "@types/node": "^20.11.5",
     "@types/qs": "^6.9.11",
     "@vitejs/plugin-vue": "^4.5.2",
     "esno": "^4.0.0",
+    "fs-extra": "^11.2.0",
     "less": "^4.2.0",
     "typescript": "^5.2.2",
     "unplugin-vue-components": "^0.26.0",

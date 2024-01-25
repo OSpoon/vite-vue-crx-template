@@ -6,10 +6,5 @@
     "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true
   },
-  "include": [
-    "vite.popup.config.ts",
-    "vite.content.config.ts",
-    "vite.background.config.ts",
-    "global.config.ts"
-  ]
+  "include": ["vite.config.ts", "global.config.ts"]
 }
