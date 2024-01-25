@@ -11,15 +11,19 @@
 
 执行 `npm install` 安装依赖;
 
-### Popup Script
+### Popup
 
 1. 执行 `npm run dev` 启动项目;
 2. 打开 `http://localhost:3000` 查看效果;
 
-### Content & Background Script
+### Content & Background
 
 1. 执行 `npm run build` 构建项目;
 2. 打开 `chrome://extensions` 加载已解压的扩展程序;
 3. 选择 `<root-dir>/build` 文件夹;
 
 PS: 每次调试均需要执行 `npm run build` 构建项目;
+
+## License
+
+[MIT License Copyright (c) 2024 小鑫同学](./LICENSE)
