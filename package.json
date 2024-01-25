@@ -1,5 +1,6 @@
 {
   "name": "vite-vue-crx-template",
+  "description": "集成 Vite5、Vue3、Typescript5、AntdV4 等基础模块实现的 Chrome V3 插件模板",
   "private": true,
   "version": "0.0.0",
   "type": "module",
