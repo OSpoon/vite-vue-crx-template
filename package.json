@@ -10,12 +10,14 @@
   },
   "dependencies": {
     "ant-design-vue": "^4.1.1",
+    "qs": "^6.11.2",
     "vue": "^3.3.11",
     "vue-router": "^4.2.5"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.258",
     "@types/node": "^20.11.5",
+    "@types/qs": "^6.9.11",
     "@vitejs/plugin-vue": "^4.5.2",
     "esno": "^4.0.0",
     "less": "^4.2.0",

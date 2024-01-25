@@ -19,22 +19,21 @@ const profile = reactive({
   error: "",
 });
 
-onMounted(() => {
+onMounted(async () => {
   spinning.value = true;
-  getProfile(
-    (result) => {
-      const { name, gender, email } = result;
+  try {
+    const data: any = await getProfile();
+    if (data) {
+      const { name, gender, email } = data;
       profile.name = name;
       profile.gender = gender;
       profile.email = email;
-    },
-    (error) => {
-      profile.error = error;
-    },
-    () => {
-      spinning.value = false;
     }
-  );
+  } catch (error: any) {
+    profile.error = error?.message;
+  } finally {
+    spinning.value = false;
+  }
 });
 </script>
 

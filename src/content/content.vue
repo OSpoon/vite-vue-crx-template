@@ -28,23 +28,20 @@ const profile = reactive({
   error: "",
 });
 
-const showModal = () => {
+const showModal = async () => {
   open.value = true;
   spinning.value = true;
-  getProfileByBackground(
-    (result) => {
-      const { name, gender, email } = result;
-      profile.name = name;
-      profile.gender = gender;
-      profile.email = email;
-    },
-    (error) => {
-      profile.error = error;
-    },
-    () => {
-      spinning.value = false;
-    }
-  );
+  try {
+    const data: any = await getProfileByBackground();
+    const { name, gender, email } = data;
+    profile.name = name;
+    profile.gender = gender;
+    profile.email = email;
+  } catch (error: any) {
+    profile.error = error?.message;
+  } finally {
+    spinning.value = false;
+  }
 };
 
 const handleOk = (_e: MouseEvent) => {
