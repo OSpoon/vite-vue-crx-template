@@ -7,22 +7,30 @@
 1. 点击 `Use this template` 创建新的仓库;
 2. 执行 `git clone <your-repo-url>` 克隆到本地;
 
-## 开发调试
+## 安装依赖
 
 执行 `npm install` 安装依赖;
 
-### Popup
+## 开发模式
 
 1. 执行 `npm run dev` 启动项目;
 2. 打开 `http://localhost:3000` 查看效果;
 
-### Content & Background
+PS: 仅支持调试 Popup, 或将 Content 挂在到 Popup 进行调试但部分功能受限;
 
-1. 执行 `npm run build` 构建项目;
+## 监听模式
+
+1. 执行 `npm run build:watch` 构建项目;
 2. 打开 `chrome://extensions` 加载已解压的扩展程序;
 3. 选择 `<root-dir>/build` 文件夹;
 
-PS: 每次调试均需要执行 `npm run build` 构建项目;
+PS: 自动构建后需手动更新 Chrome 扩展程序, 减少重复执行构建命令;
+
+## 构建模式
+
+1. 执行 `npm run build` 构建项目;
+2. 打开 `chrome://extensions` 打包扩展程序;
+3. 选择 `<root-dir>/build` 文件夹;
 
 ## License
 
