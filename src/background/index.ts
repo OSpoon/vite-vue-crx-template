@@ -1,6 +1,6 @@
 import { immediateRoute } from "@/api/request";
 
-console.log("service worker started");
+console.log("service worker started !");
 
 chrome.runtime.onMessage.addListener(function (request, _sender, sendResponse) {
   // 接收来自content script的消息，requset里不允许传递function和file类型的参数

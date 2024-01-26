@@ -21,7 +21,8 @@ function mergeOutputFiles(options: { root: string; files: string[] }): Plugin {
       for (const filename of files) {
         await fs.copyFileSync(
           path.resolve(process.cwd(), `${root}/${filename}`),
-          path.resolve(process.cwd(), `${CRX_OUTDIR}/${filename}`)
+          path.resolve(process.cwd(), `${CRX_OUTDIR}/${filename}`),
+          fs.constants.COPYFILE_FICLONE
         );
       }
       await fs.removeSync(path.resolve(process.cwd(), root));
