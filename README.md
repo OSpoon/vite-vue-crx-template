@@ -24,7 +24,7 @@ PS: 仅支持调试 Popup, 或将 Content 挂在到 Popup 进行调试但部分�
 2. 打开 `chrome://extensions` 加载已解压的扩展程序;
 3. 选择 `<root-dir>/build` 文件夹;
 
-PS: 自动构建后需手动更新 Chrome 扩展程序, 减少重复执行构建命令;
+PS: 修改代码后可以自动构建并更新 Chrome 扩展程序, 减少重复执行构建命令;
 
 ## 构建模式
 
