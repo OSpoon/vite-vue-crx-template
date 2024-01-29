@@ -17,11 +17,16 @@ export const mergeFiles = (options: {
     apply: "build",
     async closeBundle() {
       for (const filename of files) {
-        await fs.copyFileSync(
-          path.resolve(process.cwd(), `${root}/${filename}`),
-          path.resolve(process.cwd(), `${CRX_OUTDIR}/${filename}`),
-          fs.constants.COPYFILE_FICLONE
+        const exists = await fs.existsSync(
+          path.resolve(process.cwd(), `${root}/${filename}`)
         );
+        if (exists) {
+          await fs.copyFileSync(
+            path.resolve(process.cwd(), `${root}/${filename}`),
+            path.resolve(process.cwd(), `${CRX_OUTDIR}/${filename}`),
+            fs.constants.COPYFILE_FICLONE
+          );
+        }
       }
       await fs.removeSync(path.resolve(process.cwd(), root));
       callback();
