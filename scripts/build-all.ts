@@ -1,11 +1,9 @@
 import path from "node:path";
 
-import { Plugin, build } from "vite";
+import { build } from "vite";
 import vue from "@vitejs/plugin-vue";
 import Components from "unplugin-vue-components/vite";
 import { AntDesignVueResolver } from "unplugin-vue-components/resolvers";
-import fs from "fs-extra";
-import manifest from "../public/manifest.json";
 import { WebSocketServer, WebSocket } from "ws";
 
 import {
@@ -13,6 +11,8 @@ import {
   CRX_CONTENT_OUTDIR,
   CRX_OUTDIR,
 } from "../global.config";
+import { mergeFiles } from "./plugins/vite-plugin-merge-files";
+import { injectContentWatch } from "./plugins/vite-plugin-inject-content-watch";
 
 let ws: WebSocket;
 function startWebSocketServer(port: number) {
@@ -29,55 +29,6 @@ function startWebSocketServer(port: number) {
       });
     });
   }
-}
-
-function injectWatchClient(): Plugin {
-  return {
-    name: "injectWatchClient",
-    apply: "build",
-    async closeBundle() {
-      if (process.env.NODE_ENV_WATCH === "true") {
-        manifest.content_scripts.push({
-          matches: ["<all_urls>"],
-          js: ["conetnt-watch.js"],
-          run_at: "document_start",
-        });
-        await fs.outputJSONSync(
-          path.resolve(process.cwd(), "build/manifest.json"),
-          manifest
-        );
-        await fs.copyFileSync(
-          path.resolve(process.cwd(), "scripts/conetnt-watch.js"),
-          path.resolve(process.cwd(), "build/conetnt-watch.js")
-        );
-      }
-    },
-  };
-}
-
-function mergeOutputFiles(options: { root: string; files: string[] }): Plugin {
-  const { root, files } = options;
-
-  return {
-    name: "mergeOutputFiles",
-    apply: "build",
-    async closeBundle() {
-      for (const filename of files) {
-        const exists = await fs.existsSync(
-          path.resolve(process.cwd(), `${root}/${filename}`)
-        );
-        if (exists) {
-          await fs.copyFileSync(
-            path.resolve(process.cwd(), `${root}/${filename}`),
-            path.resolve(process.cwd(), `${CRX_OUTDIR}/${filename}`),
-            fs.constants.COPYFILE_FICLONE
-          );
-        }
-      }
-      await fs.removeSync(path.resolve(process.cwd(), root));
-      ws && ws.send("WATCH_RELOAD");
-    },
-  };
 }
 
 function watchConfig() {
@@ -112,7 +63,7 @@ async function buildPopupScript() {
             }),
           ],
         }),
-        injectWatchClient(),
+        injectContentWatch(),
       ],
     });
     console.log("\x1B[32m✓ build popup script success");
@@ -160,9 +111,14 @@ async function buildContentScript() {
             }),
           ],
         }),
-        mergeOutputFiles({
+        mergeFiles({
           root: CRX_CONTENT_OUTDIR,
           files: ["content.js", "content.css"],
+          callback: () => {
+            if (process.env.NODE_ENV_WATCH === "true") {
+              ws && ws.send("WATCH_RELOAD");
+            }
+          },
         }),
       ],
     });
@@ -192,9 +148,14 @@ async function buildBackgroundScript() {
         },
       },
       plugins: [
-        mergeOutputFiles({
+        mergeFiles({
           root: CRX_BACKGROUND_OUTDIR,
           files: ["background.js"],
+          callback: () => {
+            if (process.env.NODE_ENV_WATCH === "true") {
+              ws && ws.send("WATCH_RELOAD");
+            }
+          },
         }),
       ],
     });
