@@ -40,7 +40,6 @@ function injectWatchClient(): Plugin {
         manifest.content_scripts.push({
           matches: ["<all_urls>"],
           js: ["conetnt-watch.js"],
-          css: [],
           run_at: "document_start",
         });
         await fs.outputJSONSync(
@@ -64,11 +63,16 @@ function mergeOutputFiles(options: { root: string; files: string[] }): Plugin {
     apply: "build",
     async closeBundle() {
       for (const filename of files) {
-        await fs.copyFileSync(
-          path.resolve(process.cwd(), `${root}/${filename}`),
-          path.resolve(process.cwd(), `${CRX_OUTDIR}/${filename}`),
-          fs.constants.COPYFILE_FICLONE
+        const exists = await fs.existsSync(
+          path.resolve(process.cwd(), `${root}/${filename}`)
         );
+        if (exists) {
+          await fs.copyFileSync(
+            path.resolve(process.cwd(), `${root}/${filename}`),
+            path.resolve(process.cwd(), `${CRX_OUTDIR}/${filename}`),
+            fs.constants.COPYFILE_FICLONE
+          );
+        }
       }
       await fs.removeSync(path.resolve(process.cwd(), root));
       ws && ws.send("WATCH_RELOAD");

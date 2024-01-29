@@ -7,10 +7,16 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
-    AFloatButton: typeof import('ant-design-vue/es')['FloatButton']
-    AModal: typeof import('ant-design-vue/es')['Modal']
-    ASpin: typeof import('ant-design-vue/es')['Spin']
-    ATypographyTitle: typeof import('ant-design-vue/es')['TypographyTitle']
+    AButton: typeof import('ant-design-vue/es')['Button']
+    ACard: typeof import('ant-design-vue/es')['Card']
+    AForm: typeof import('ant-design-vue/es')['Form']
+    AFormItem: typeof import('ant-design-vue/es')['FormItem']
+    AList: typeof import('ant-design-vue/es')['List']
+    AListItem: typeof import('ant-design-vue/es')['ListItem']
+    AListItemMeta: typeof import('ant-design-vue/es')['ListItemMeta']
+    ASpace: typeof import('ant-design-vue/es')['Space']
+    ASwitch: typeof import('ant-design-vue/es')['Switch']
+    ATextarea: typeof import('ant-design-vue/es')['Textarea']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }
