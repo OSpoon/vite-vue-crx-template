@@ -7,7 +7,7 @@ chrome.runtime.onMessage.addListener(function (request, _sender, sendResponse) {
   chrome.tabs.query(
     { currentWindow: true, active: true },
     async function (_tabs) {
-      const { contentRequest } = request;
+      const { contentRequest, message } = request;
       // 接收来自content的api请求
       if (contentRequest === "api-request") {
         const { method, path, options } = request.data;
@@ -34,6 +34,11 @@ chrome.runtime.onMessage.addListener(function (request, _sender, sendResponse) {
             });
           }
         }
+      }
+      // WATCH 模式生效: 监听来自 background 的 reload 请求
+      if (message == "WATCH_RELOAD") {
+        sendResponse({ message: "WATCH_RELOAD_PAGE" });
+        chrome.runtime.reload();
       }
     }
   );

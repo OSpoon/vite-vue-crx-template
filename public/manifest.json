@@ -4,7 +4,8 @@
   "description": "集成 Vite5、Vue3、Typescript5、AntdV4 等基础模块实现的 Chrome V3 插件模板",
   "manifest_version": 3,
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background.js",
+    "type": "module"
   },
   "content_scripts": [
     {

@@ -10,13 +10,16 @@
     console.log(`[CONTENT_WATCH] connection established`);
   };
   ws.onmessage = function (e) {
-    if (e.data === "RELOAD" && chrome.runtime?.id) {
-      chrome.runtime.sendMessage({ msg: RELOAD }, () => {
-        if (RELOADPAGE) window.location.reload();
-        else
+    if (e.data === "WATCH_RELOAD" && chrome.runtime?.id) {
+      chrome.runtime.sendMessage({ message: "WATCH_RELOAD" }, (result) => {
+        console.log('result', result);
+        if (result?.message === "WATCH_RELOAD_PAGE") {
+          window.location.reload()
+        } else {
           console.log(
             `[CONTENT_WATCH] extension reload, pls refresh the page manually`
           );
+        }
       });
     }
   };

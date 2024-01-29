@@ -6,7 +6,7 @@ import Components from "unplugin-vue-components/vite";
 import { AntDesignVueResolver } from "unplugin-vue-components/resolvers";
 import fs from "fs-extra";
 import manifest from "../public/manifest.json";
-// import { WebSocketServer, WebSocket } from "ws";
+import { WebSocketServer, WebSocket } from "ws";
 
 import {
   CRX_BACKGROUND_OUTDIR,
@@ -14,28 +14,21 @@ import {
   CRX_OUTDIR,
 } from "../global.config";
 
-function injectReloadMonitor(): Plugin {
-  return {
-    name: "injectReloadMonitor",
-    apply: "build",
-    transform(code, id) {
-      if (
-        process.env.NODE_ENV_WATCH === "true" &&
-        id.endsWith("src/background/index.ts")
-      ) {
-        return `${code}
-          // 监听模式下注入自动刷新功能
-          chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-            if (request.message == "RELOAD") {
-              chrome.runtime.reload();
-              sendResponse({ message: "RELOAD" });
-            }
-          });
-      `;
-      }
-      return code;
-    },
-  };
+let ws: WebSocket;
+function startWebSocketServer(port: number) {
+  if (process.env.NODE_ENV_WATCH === "true") {
+    const wss = new WebSocketServer({ port: port || 18001 });
+    wss.on("connection", function connection(client) {
+      ws = client;
+      console.log(`\x1B[32m[NOTIFY_RELOAD]\x1B[0m client connected.`);
+      ws.on("message", () => {
+        ws.send("keep websocket alive.");
+      });
+      ws.on("close", () => {
+        console.log(`\x1B[32m[NOTIFY_RELOAD]\x1B[0m client disconnected.`);
+      });
+    });
+  }
 }
 
 function injectWatchClient(): Plugin {
@@ -63,34 +56,12 @@ function injectWatchClient(): Plugin {
   };
 }
 
-function mergeOutputFiles(options: {
-  root: string;
-  files: string[];
-  port: number;
-}): Plugin {
-  const { root, files, port } = options;
-
-  let ws: WebSocket;
+function mergeOutputFiles(options: { root: string; files: string[] }): Plugin {
+  const { root, files } = options;
 
   return {
     name: "mergeOutputFiles",
     apply: "build",
-    // configResolved(config) {
-    //   if (config.build.watch) {
-    //     const wss = new WebSocketServer({ port: port || 18001 });
-    //     console.log(wss.path);
-    //     wss.on("connection", function connection(client) {
-    //       ws = client;
-    //       console.log(`\x1B[32m[NOTIFY_RELOAD]\x1B[0m client connected.`);
-    //       ws.on("message", () => {
-    //         ws.send("keep websocket alive.");
-    //       });
-    //       ws.on("close", () => {
-    //         console.log(`\x1B[32m[NOTIFY_RELOAD]\x1B[0m client disconnected.`);
-    //       });
-    //     });
-    //   }
-    // },
     async closeBundle() {
       for (const filename of files) {
         await fs.copyFileSync(
@@ -100,20 +71,18 @@ function mergeOutputFiles(options: {
         );
       }
       await fs.removeSync(path.resolve(process.cwd(), root));
-      // ws && ws.send("RELOAD");
+      ws && ws.send("WATCH_RELOAD");
     },
   };
 }
 
 function watchConfig() {
-  return process.env.NODE_ENV_WATCH === "true"
-    ? {
-        buildDelay: 300,
-        chokidar: {
-          usePolling: true,
-        },
-      }
-    : null;
+  return {
+    buildDelay: 300,
+    chokidar: {
+      usePolling: true,
+    },
+  };
 }
 
 async function buildPopupScript() {
@@ -128,7 +97,7 @@ async function buildPopupScript() {
       },
       build: {
         outDir: CRX_OUTDIR,
-        watch: watchConfig(),
+        watch: process.env.NODE_ENV_WATCH === "true" ? watchConfig() : null,
       },
       plugins: [
         vue(),
@@ -167,7 +136,7 @@ async function buildContentScript() {
             },
           },
         },
-        watch: watchConfig(),
+        watch: process.env.NODE_ENV_WATCH === "true" ? watchConfig() : null,
       },
       resolve: {
         alias: {
@@ -190,7 +159,6 @@ async function buildContentScript() {
         mergeOutputFiles({
           root: CRX_CONTENT_OUTDIR,
           files: ["content.js", "content.css"],
-          port: 18001,
         }),
       ],
     });
@@ -209,10 +177,10 @@ async function buildBackgroundScript() {
         outDir: CRX_BACKGROUND_OUTDIR,
         lib: {
           entry: [path.resolve(process.cwd(), "src/background/index.ts")],
-          formats: ["cjs"],
+          formats: ["es"],
           fileName: () => "background.js",
         },
-        watch: watchConfig(),
+        watch: process.env.NODE_ENV_WATCH === "true" ? watchConfig() : null,
       },
       resolve: {
         alias: {
@@ -220,11 +188,9 @@ async function buildBackgroundScript() {
         },
       },
       plugins: [
-        injectReloadMonitor(),
         mergeOutputFiles({
           root: CRX_BACKGROUND_OUTDIR,
           files: ["background.js"],
-          port: 18002,
         }),
       ],
     });
@@ -235,8 +201,9 @@ async function buildBackgroundScript() {
 }
 
 (async () => {
-  // await buildPopupScript();
-  // await buildContentScript();
+  startWebSocketServer(18001);
+  await buildPopupScript();
+  await buildContentScript();
   await buildBackgroundScript();
   console.log("\x1B[32m✓ build all success");
 })();
