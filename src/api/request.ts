@@ -1,4 +1,5 @@
 import qs from "qs";
+import { request as sendMessage } from "../message";
 
 export interface Params {
   [key: string]: any;
@@ -83,24 +84,21 @@ export function backgroundRoute(
 ) {
   return new Promise((resolve, reject) => {
     if (chrome && chrome.runtime) {
-      chrome.runtime.sendMessage(
-        {
-          contentRequest: "api-request",
-          data: {
-            method,
-            path,
-            options,
-          },
+      sendMessage({
+        url: "sw://api-request",
+        data: {
+          method,
+          path,
+          options,
         },
-        (result) => {
-          const { _code, data, error } = result;
-          if (_code === "success") {
-            resolve(data);
-          } else if (_code === "fail") {
-            reject(error);
-          }
+      }).then((result: any) => {
+        const { _code, data, error } = result;
+        if (_code === "success") {
+          resolve(data);
+        } else if (_code === "fail") {
+          reject(error);
         }
-      );
+      });
     } else {
       reject("chrome api not defined");
     }

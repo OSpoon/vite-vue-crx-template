@@ -9,6 +9,7 @@
 
 <script setup lang="ts">
 import { getProfile } from "@/api";
+import { request } from "@/message";
 import { onMounted, reactive, ref } from "vue";
 
 const spinning = ref(false);
@@ -29,6 +30,10 @@ onMounted(async () => {
       profile.gender = gender;
       profile.email = email;
     }
+    const result = await request({
+      url: "cs://user-data",
+    });
+    console.log(result);
   } catch (error: any) {
     profile.error = error?.message;
   } finally {

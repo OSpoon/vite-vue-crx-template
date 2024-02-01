@@ -11,9 +11,8 @@
   };
   ws.onmessage = function (e) {
     if (e.data === "WATCH_RELOAD" && chrome.runtime?.id) {
-      chrome.runtime.sendMessage({ message: "WATCH_RELOAD" }, (result) => {
-        console.log('result', result);
-        if (result?.message === "WATCH_RELOAD_PAGE") {
+      chrome.runtime.sendMessage({ url: "sw://watch_reload_extend" }, (result) => {
+        if (result?.url === "cs://watch_reload_page") {
           window.location.reload()
         } else {
           console.log(

@@ -17,6 +17,19 @@
 <script setup lang="ts">
 import { getProfileByBackground } from "@/api";
 import { reactive, ref } from "vue";
+import { inject } from "../message";
+
+inject(
+  {
+    userData: () => {
+      return {
+        name: "张三",
+        age: 35,
+      };
+    },
+  },
+  "cs"
+);
 
 const open = ref<boolean>(false);
 
