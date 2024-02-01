@@ -32,6 +32,8 @@ PS: 修改代码后可以自动构建并更新 Chrome 扩展程序, 减少重复
 2. 打开 `chrome://extensions` 打包扩展程序;
 3. 选择 `<root-dir>/build` 文件夹;
 
+## [消息机制](./MESSAGING.md)
+
 ## License
 
 [MIT License Copyright (c) 2024 小鑫同学](./LICENSE)

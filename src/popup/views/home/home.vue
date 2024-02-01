@@ -30,10 +30,6 @@ onMounted(async () => {
       profile.gender = gender;
       profile.email = email;
     }
-    const result = await request({
-      url: "cs://user-data",
-    });
-    console.log(result);
   } catch (error: any) {
     profile.error = error?.message;
   } finally {
